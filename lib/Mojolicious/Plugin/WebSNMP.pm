@@ -29,6 +29,7 @@ sub register {
     $app->log->debug(sprintf "%s", $c->param('oid')||'1.3.6.1.2.1.1');
     $c->render(text => dumper $app->snmpwalk($c->param('oid')||'1.3.6.1.2.1.1'));
   });
+  $r->websocket('/server')->to('#websocket');
 }
 
 1;
