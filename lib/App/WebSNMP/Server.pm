@@ -3,9 +3,11 @@ package App::WebSNMP::Server;
 use Mojo::Base 'Mojolicious::Controller';
 use Mojo::JSON 'j';
 
-our $VERSION = "0.01";
+use App:WebSNMP::Core;
 
 use Time::HiRes 'time';
+
+our $VERSION = "0.01";
 
 use constant {
   FATAL => 1000,
@@ -13,8 +15,10 @@ use constant {
   FATAL_TIME => 'Time off by more than %s seconds',
 };
 
-has version => sub { $VERSION };
-has protocol => sub { int $_[1] || $VERSION };
+has core => sub { App::WebSNMP::Core->new };
+
+#has version => sub { $VERSION };
+#has protocol => sub { int $_[1] || $VERSION };
 
 has 'test';
 has app => sub { shift->{app} };

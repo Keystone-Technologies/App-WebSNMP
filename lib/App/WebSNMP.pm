@@ -5,13 +5,7 @@ use Mojo::Base 'Mojolicious';
 sub startup {
   my $self = shift;
 
-  $self->plugin('Config' => {
-    default => {
-      hypnotoad => {
-        listen => ['http://[::]', 'https://[::]'],
-      },
-    }
-  });
+  $self->plugin('Config' => {default => {}});
   $self->plugin('Listen');
   $self->plugin('WebSNMP');
 
