@@ -10,6 +10,8 @@ use Sys::Hostname::FQDN qw/short fqdn/; # Build this in
 my ($domainname) = fqdn() =~ /${\(short())}\.(.*)/;
 #my $cv = AnyEvent->condvar;
 
+our $VERSION = "0.01";
+
 use File::Spec::Functions 'catfile';
 use Time::HiRes 'time';
 use Math::Prime::Util;
@@ -22,6 +24,9 @@ my $retry = 0;
 my $counter = 0;
 
 has 'test';
+
+has version => sub { $VERSION };
+has protocol => sub { int $_[1] || $VERSION };
 
 has 'tid';
 has 'ua';
@@ -46,6 +51,7 @@ warn "Trying....\n";
     unless ( $websnmp_url ) { # Expire this value sometimes to check DNS again.
       #AnyEvent::DNS::srv ($self->{srv}->{service}||"websnmp"), ($self->{srv}->{proto}||"tcp"), ($self->{srv}->{domain}||$domainname||'local'), $cv;
       $websnmp_url = '';#join(':', @{$cv->recv}[3,2]);
+      $websnmp_url ||= 'localhost:3000';
       $self->app->log->debug("Master URL: $websnmp_url");
     }
     $self->ua->websocket("ws://$websnmp_url/server" => sub {
@@ -90,7 +96,7 @@ sub upload {
 sub ping {
   my $self = shift;
   return undef unless $self->tx && $self->tx->is_websocket;
-  $self->tx->send([1, 0, 0, 0, 9, join ':', $self->app->version, time, $self->public_uuid]);
+  $self->tx->send([1, 0, 0, 0, 9, join ':', $self->version, time, $self->public_uuid]);
 }
 
 sub _wait_prime {

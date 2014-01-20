@@ -18,18 +18,17 @@ sub register {
   $app->helper(client => sub { $self->client });
   $app->helper(server => sub { $self->server });
 
-  $self->client->test('ABC');
   $self->server->test('123');
   warn $self->server->test;
 
   my $r = $app->routes;
-  $r->get('/server')->to(cb => sub { shift->render(text => "Server\n") });
+  $r->get('/Server')->to(cb => sub { shift->render(text => "Server\n") });
   $r->get('/snmpwalk/*oid')->to(cb => sub {
     my $c = shift;
     $app->log->debug(sprintf "%s", $c->param('oid')||'1.3.6.1.2.1.1');
     $c->render(text => dumper $app->snmpwalk($c->param('oid')||'1.3.6.1.2.1.1'));
   });
-  $r->websocket('/server')->to('#websocket');
+  $r->websocket('/server')->to('server#websocket');
 }
 
 1;

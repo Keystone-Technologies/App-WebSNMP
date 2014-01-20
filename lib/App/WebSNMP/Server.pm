@@ -1,7 +1,9 @@
 package App::WebSNMP::Server;
 
-use Mojo::Base -base;
+use Mojo::Base 'Mojolicious::Controller';
 use Mojo::JSON 'j';
+
+our $VERSION = "0.01";
 
 use Time::HiRes 'time';
 
@@ -10,6 +12,9 @@ use constant {
   FATAL_PROTOCOL => 'Version protocol mismatch',
   FATAL_TIME => 'Time off by more than %s seconds',
 };
+
+has version => sub { $VERSION };
+has protocol => sub { int $_[1] || $VERSION };
 
 has 'test';
 has app => sub { shift->{app} };
@@ -31,7 +36,7 @@ sub websocket {
     my ($version, $time, $uuid) = split /:/, $frame->[5];
     $self->app->log->debug(sprintf 'I am a Manager (%s), an AGENT (%s) said: %s:%s', $ws->tx, $uuid, $version, $time);
     #$version='1.01';
-    $self->tx->finish(1000 => FATAL_PROTOCOL) and return $self->app->log->fatal(FATAL_PROTOCOL) unless $self->app->protocol($self->app->version) == $self->app->protocol($version);
+    $self->tx->finish(1000 => FATAL_PROTOCOL) and return $self->app->log->fatal(FATAL_PROTOCOL) unless $self->protocol($self->version) == $self->protocol($version);
     #$time = time + 3600;
     $self->tx->finish(1000 => sprintf FATAL_TIME, 120) and return $self->app->log->fatal(sprintf FATAL_TIME, 120) unless abs($time-time()) <= 120;
   });
