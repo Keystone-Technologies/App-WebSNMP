@@ -3,7 +3,7 @@ package App::WebSNMP::Server;
 use Mojo::Base 'Mojolicious::Controller';
 use Mojo::JSON 'j';
 
-use App:WebSNMP::Core;
+use App::WebSNMP::Core;
 
 use Time::HiRes 'time';
 
